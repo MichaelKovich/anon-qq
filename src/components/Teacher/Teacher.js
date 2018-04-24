@@ -6,7 +6,7 @@ import axios from "axios";
 
 class Teacher extends Component {
   state = {
-    endpoint: "http://localhost:3001",
+    endpoint: "http://172.31.99.112:3000/",
     code: null,
     messages: [],
     message: ""
@@ -22,6 +22,7 @@ class Teacher extends Component {
 
   onSubmitHandler = e => {
     e.preventDefault();
+    this.setState({ message: "" });
     axios.post("/messages/send", { text: this.state.message });
   };
 
@@ -40,10 +41,7 @@ class Teacher extends Component {
         <div className="Teacher__room">
           {messages[0] ? (
             messages.map(message => {
-              console.log(message);
-              {
-                /* return <p>{message}</p>; */
-              }
+              return <p key={Math.random()}>{message.text}</p>;
             })
           ) : (
             <p>Not working or error or something.</p>
