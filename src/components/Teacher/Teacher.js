@@ -38,10 +38,16 @@ class Teacher extends Component {
           />
         </form>
         <div className="Teacher__room">
-          {messages[0] &&
+          {messages[0] ? (
             messages.map(message => {
-              return <p>{message}</p>;
-            })}
+              console.log(message);
+              {
+                /* return <p>{message}</p>; */
+              }
+            })
+          ) : (
+            <p>Not working or error or something.</p>
+          )}
         </div>
       </div>
     );
