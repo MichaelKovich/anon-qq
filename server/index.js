@@ -23,6 +23,11 @@ io.on('connect', (socket) => {
     clearInterval(interval);
   }
   intervalId = setInterval(() => getDataAndEmit(socket, 2000));
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+    clearInterval(intervalId);
+  });
 });
 
 const message = [];
