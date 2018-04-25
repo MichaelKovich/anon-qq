@@ -9,7 +9,10 @@ class Student extends Component {
     this.state = {
       message: "",
       code: "",
-      disabled: true
+      disabled: true,
+      firstName: "",
+      lastName: "",
+      messages: []
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
@@ -18,29 +21,55 @@ class Student extends Component {
     this.socket.on("validation response", response => {
       this.setState({ disabled: !response });
     });
+
+    this.socket.on("get messages", messages => {
+      this.setState({ messages });
+    });
   }
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
     if (this.state.code !== "") {
-      this.socket.emit("verify code", e.target.value);
+      this.socket.emit("verify code", this.state.code);
       this.setState({ code: "" });
     }
   };
 
   onSubmitHandler = e => {
     e.preventDefault();
-    if (this.state.message !== "") {
-      this.socket.emit("send message", this.state.message);
+    let { message, firstName, lastName } = this.state;
+    if (message && firstName && lastName) {
+      this.socket.emit("send message", {
+        user: `${firstName} ${lastName}`,
+        message
+      });
       this.setState({ message: "" });
     }
   };
 
   render() {
-    let { message, disabled, code } = this.state;
+    let { message, disabled, code, messages } = this.state;
     return (
       <div className="Student">
         <form onSubmit={this.onCodeSubmitHandler}>
+          <input
+            style={{
+              display: disabled === true ? "block" : "none"
+            }}
+            className="Student__input Student__input--firstname"
+            onChange={e => this.setState({ firstName: e.target.value })}
+            type="text"
+            placeholder="First Name"
+          />
+          <input
+            style={{
+              display: disabled === true ? "block" : "none"
+            }}
+            className="Student__input Student__input--lastname"
+            onChange={e => this.setState({ lastName: e.target.value })}
+            type="text"
+            placeholder="Last Name"
+          />
           <input
             className="Student__input Student__input--code"
             onChange={e => this.setState({ code: e.target.value })}
@@ -60,6 +89,23 @@ class Student extends Component {
             placeholder="Question"
           />
         </form>
+        <div className="Student__room">
+          {messages && messages[0] ? (
+            messages.map(message => (
+              <div
+                className="Student__message"
+                key={message.id}
+                onClick={() => this.deleteHandler(message.id)}
+              >
+                {message.message}
+              </div>
+            ))
+          ) : (
+            <p className="Student__message--none">
+              Waiting for student questions...
+            </p>
+          )}
+        </div>
       </div>
     );
   }

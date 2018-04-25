@@ -24,7 +24,6 @@ class Teacher extends Component {
     });
 
     this.socket.on("generation response", code => {
-      console.log("code: ", code);
       this.setState({ code });
     });
   }
@@ -48,7 +47,7 @@ class Teacher extends Component {
                 key={message.id}
                 onClick={() => this.deleteHandler(message.id)}
               >
-                {message.message}
+                {`${message.user}: ${message.message}`}
               </div>
             ))
           ) : (
