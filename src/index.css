@@ -21,6 +21,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+@media screen and (min-width: 320px) {
+  html {
+    font-size: calc(16px + 6 * ((100vw - 320px) / 680));
+  }
+}
+@media screen and (min-width: 992px) {
+  html {
+    font-size: 22px;
+  }
+}
+
 .Link__none {
   text-decoration: none;
 }

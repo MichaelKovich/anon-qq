@@ -29,7 +29,9 @@ class Student extends Component {
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
-    if (this.state.code !== "") {
+    let { code, firstName, lastName } = this.state;
+    console.log("lastName: ", lastName);
+    if (code && firstName && lastName) {
       this.socket.emit("verify code", this.state.code);
       this.setState({ code: "" });
     }
@@ -38,7 +40,7 @@ class Student extends Component {
   onSubmitHandler = e => {
     e.preventDefault();
     let { message, firstName, lastName } = this.state;
-    if (message && firstName && lastName) {
+    if (message) {
       this.socket.emit("send message", {
         user: `${firstName} ${lastName}`,
         message
@@ -48,7 +50,7 @@ class Student extends Component {
   };
 
   render() {
-    let { message, disabled, code, messages } = this.state;
+    let { message, disabled, code, messages, firstName, lastName } = this.state;
     return (
       <div className="Student">
         <form onSubmit={this.onCodeSubmitHandler}>
@@ -58,6 +60,7 @@ class Student extends Component {
             }}
             className="Student__input Student__input--firstname"
             onChange={e => this.setState({ firstName: e.target.value })}
+            value={firstName}
             type="text"
             placeholder="First Name"
           />
@@ -67,15 +70,24 @@ class Student extends Component {
             }}
             className="Student__input Student__input--lastname"
             onChange={e => this.setState({ lastName: e.target.value })}
+            value={lastName}
             type="text"
             placeholder="Last Name"
           />
           <input
+            style={{
+              display: disabled === true ? "block" : "none"
+            }}
             className="Student__input Student__input--code"
             onChange={e => this.setState({ code: e.target.value })}
             value={code}
             type="text"
             placeholder="Code"
+          />
+          <button
+            style={{
+              display: "none"
+            }}
           />
         </form>
         Enter your questions here:
@@ -92,11 +104,7 @@ class Student extends Component {
         <div className="Student__room">
           {messages && messages[0] ? (
             messages.map(message => (
-              <div
-                className="Student__message"
-                key={message.id}
-                onClick={() => this.deleteHandler(message.id)}
-              >
+              <div className="Student__message" key={message.id}>
                 {message.message}
               </div>
             ))

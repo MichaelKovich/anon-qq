@@ -37,7 +37,7 @@ class Teacher extends Component {
     return (
       <div className="Teacher">
         <div>
-          Your classroom code is: <p>{code}</p>
+          Your classroom code is: <pre>{code}</pre>
         </div>
         <div className="Teacher__room">
           {messages && messages[0] ? (
