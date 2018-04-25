@@ -9,6 +9,9 @@ const generateKey = (req, res, next) => {
   res.status(200).json({key});
 };
 
+// Generates a unique ID for each message.
+const generateID = digits => rand.generate(digits);
+
 // Checks whether an entered key is associated with a room.
 const validateKey = (req, res, next) => {
   console.log('Validating key...');
@@ -19,5 +22,6 @@ const validateKey = (req, res, next) => {
 
 module.exports = {
   generateKey,
+  generateID,
   validateKey,
 };
