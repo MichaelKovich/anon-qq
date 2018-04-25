@@ -1,43 +1,39 @@
-import React, { Component } from "react";
-import socketIOClient from "socket.io-client";
-// import axios from "axios";
-
-//import axios
+import React, {Component} from 'react';
+import socketIOClient from 'socket.io-client';
 
 class Teacher extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // endpoint: "http://172.31.99.112:3001/",
       code: null,
       messages: [],
-      message: ""
+      message: '',
     };
-    this.socket = socketIOClient("http://192.168.1.152:3001");
+    this.socket = socketIOClient('http://192.168.1.154:3001/');
   }
 
-  // axios call to create key /keys/generate
   componentDidMount() {
-    // const { endpoint } = this.state;
-    this.socket.on("Message", messages => this.setState({ messages }));
-    // this.setState({code: 1234});
+    this.socket.on('Message', message => {
+      const aggregatedMessages = [...this.state.messages, message];
+      this.setState({messages: aggregatedMessages});
+      console.log(this.state);
+    });
   }
 
   onSubmitHandler = e => {
     e.preventDefault();
-    this.socket.emit("Message", this.state.message);
-    // axios.post("/messages/send", { text: this.state.message });
-    this.setState({ message: "" });
+    this.socket.emit('Message', this.state.message);
+    this.setState({message: ''});
   };
 
   render() {
-    let { code, messages, message } = this.state;
+    let {code, messages, message} = this.state;
     return (
       <div className="Teacher">
         The code is {code}.
         <form onSubmit={this.onSubmitHandler}>
           <input
-            onChange={e => this.setState({ message: e.target.value })}
+            onChange={e => this.setState({message: e.target.value})}
             value={message}
             type="text"
           />
@@ -45,10 +41,10 @@ class Teacher extends Component {
         <div className="Teacher__room">
           {messages[0] ? (
             messages.map(message => {
-              return <p key={Math.random()}>{message.text}</p>;
+              return <p key={Math.random()}>{message}</p>;
             })
           ) : (
-            <p>Not working or error or something.</p>
+            <p>Please enter a message.</p>
           )}
         </div>
       </div>
