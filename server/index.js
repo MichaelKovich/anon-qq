@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
 
   socket.on('send message', (message) => {
-    messages.unshift({message, id: rand.generate(16)});
+    messages.unshift({message: message.message, user: message.user, id: rand.generate(16)});
     console.log(messages[messages.length - 1]);
     io.sockets.emit('get messages', messages);
   });
@@ -52,16 +52,5 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 });
-
-const deleteMessage = (req, res, next) => {
-  const {id} = req.params;
-  messages.forEach((message, index) => {
-    console.log('ID HERE: ', id);
-    if (message.id === id) {
-      messages.splice(index, 1);
-      return res.status(200).json(messages);
-    }
-  });
-};
 
 server.listen(port, () => console.log(`Dr. Crane is listening on ${port}`));
