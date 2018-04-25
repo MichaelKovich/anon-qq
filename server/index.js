@@ -21,15 +21,23 @@ io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
 
   socket.on('send message', (message) => {
-    messages.unshift({message: message.message, user: message.user, id: rand.generate(16)});
-    io.sockets.emit('get messages', messages);
+    messages.unshift({
+      message: message.message,
+      key: message.key,
+      user: message.user,
+      id: rand.generate(16),
+    });
+    console.log(messages);
+    const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
+    io.sockets.in(message.key).emit('get messages', messagesForRoom);
   });
 
-  socket.on('delete message', (id) => {
+  socket.on('delete message', ({id, key}) => {
     const index = messages.findIndex(message => message.id === id);
     if (index !== -1) {
       messages.splice(index, 1);
-      io.sockets.emit('delete message', messages);
+      const messagesForRoom = messages.filter(message => message.key === key);
+      io.sockets.in(key).emit('delete message', messagesForRoom);
     }
   });
 
@@ -38,13 +46,19 @@ io.on('connection', (socket) => {
     const key = rand.generate(6);
     keyHistory.push(key);
     io.sockets.emit('generation response', key);
+    socket.join(key);
   });
 
   socket.on('verify code', (key) => {
     console.log('Validating key...');
-    keyHistory.includes(key)
-      ? io.sockets.emit('validation response', true)
-      : io.sockets.emit('validation response', false);
+    console.log('Input Key: ', key);
+    console.log('Key History: ', keyHistory);
+    if (keyHistory.includes(key)) {
+      socket.join(key);
+      io.sockets.emit('validation response', true);
+    } else {
+      io.sockets.emit('validation response', false);
+    }
   });
 
   socket.on('disconnect', () => {
