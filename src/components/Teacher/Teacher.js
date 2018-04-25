@@ -1,29 +1,33 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-import axios from "axios";
+// import axios from "axios";
 
 //import axios
 
 class Teacher extends Component {
-  state = {
-    endpoint: "http://172.31.99.112:3000/",
-    code: null,
-    messages: [],
-    message: ""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      // endpoint: "http://172.31.99.112:3001/",
+      code: null,
+      messages: [],
+      message: ""
+    };
+    this.socket = socketIOClient("http://192.168.1.152:3001");
+  }
 
-  //axios call to create key /keys/generate
+  // axios call to create key /keys/generate
   componentDidMount() {
-    const { endpoint } = this.state;
-    const socket = socketIOClient(endpoint);
-    socket.on("Message", messages => this.setState({ messages }));
+    // const { endpoint } = this.state;
+    this.socket.on("Message", messages => this.setState({ messages }));
     // this.setState({code: 1234});
   }
 
   onSubmitHandler = e => {
     e.preventDefault();
+    this.socket.emit("Message", this.state.message);
+    // axios.post("/messages/send", { text: this.state.message });
     this.setState({ message: "" });
-    axios.post("/messages/send", { text: this.state.message });
   };
 
   render() {
