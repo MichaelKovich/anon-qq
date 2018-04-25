@@ -6,6 +6,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: "Roboto Slab", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+    "Helvetica Neue", sans-serif;
+  font-size: 2rem;
 }
 
 .Header > .Link__none {

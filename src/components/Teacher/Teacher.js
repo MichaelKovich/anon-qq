@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-import axios from "axios";
+// import axios from "axios";
 
 import "./Teacher.css";
 
@@ -13,13 +13,12 @@ class Teacher extends Component {
       // message: ""
     };
     // this.socket = socketIOClient("http://192.168.1.154:3001/");
-    this.socket = socketIOClient("http://localhost:3001/");
+    // this.socket = socketIOClient("http://localhost:3001/");
+    this.socket = socketIOClient("http://172.31.99.112:3001/");
   }
 
   componentDidMount() {
     this.socket.on("Message", message => {
-      // id:
-      // text:
       const aggregatedMessages = [...this.state.messages, message];
       this.setState({ messages: aggregatedMessages });
     });
