@@ -18,10 +18,6 @@ class Student extends Component {
   }
 
   componentDidMount() {
-    this.socket.on('validation response', response => {
-      this.setState({disabled: !response});
-    });
-
     this.socket.on('delete message', messages => {
       this.setState({messages});
     });
@@ -36,6 +32,9 @@ class Student extends Component {
     let {code, firstName, lastName} = this.state;
     if (code && firstName && lastName) {
       this.socket.emit('verify code', this.state.code);
+      this.socket.on('validation response', response => {
+        this.setState({disabled: !response});
+      });
     }
   };
 
