@@ -9,8 +9,7 @@ class Student extends Component {
     this.state = {
       message: ""
     };
-    // this.socket = socketIOClient("http://192.168.1.154:3001/");
-    this.socket = socketIOClient("http://172.31.99.112:3001/");
+    this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
 
   onSubmitHandler = e => {

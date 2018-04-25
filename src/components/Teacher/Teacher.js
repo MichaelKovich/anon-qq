@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import socketIOClient from "socket.io-client";
-// import axios from "axios";
 
 import "./Teacher.css";
 
@@ -10,11 +9,8 @@ class Teacher extends Component {
     this.state = {
       code: null,
       messages: []
-      // message: ""
     };
-    // this.socket = socketIOClient("http://192.168.1.154:3001/");
-    // this.socket = socketIOClient("http://localhost:3001/");
-    this.socket = socketIOClient("http://172.31.99.112:3001/");
+    this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
 
   componentDidMount() {
@@ -29,12 +25,6 @@ class Teacher extends Component {
   }
 
   deleteHandler(id) {
-    // axios
-    //   .delete(`http://192.168.1.154:3001/messages/delete/${id}`)
-    //   .then((response) => {
-    //     this.setState({messages: response.data});
-    //   })
-    //   .catch(err => console.log(err));
     this.socket.emit("delete message", id);
   }
 
