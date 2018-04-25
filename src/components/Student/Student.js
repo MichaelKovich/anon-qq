@@ -22,6 +22,10 @@ class Student extends Component {
       this.setState({ disabled: !response });
     });
 
+    this.socket.on("delete message", messages => {
+      this.setState({ messages });
+    });
+
     this.socket.on("get messages", messages => {
       this.setState({ messages });
     });
