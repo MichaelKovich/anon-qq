@@ -39,11 +39,8 @@ const deleteMessage = (req, res, next) => {
     console.log('ID HERE: ', id);
     if (message.id === id) {
       messages.splice(index, 1);
-      return console.log(messages);
+      res.status(200).json(messages);
     }
-    console.log('Message Not Found!');
-    console.log(messages);
-    return messages;
   });
 };
 
