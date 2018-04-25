@@ -1,43 +1,40 @@
-import React, {Component} from 'react';
-import socketIOClient from 'socket.io-client';
-import axios from 'axios';
+import React, { Component } from "react";
+import socketIOClient from "socket.io-client";
 
-import './Teacher.css';
+import "./Teacher.css";
 
 class Teacher extends Component {
   constructor(props) {
     super(props);
     this.state = {
       code: null,
-      messages: [],
+      messages: []
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
+    this.socket.emit("generate code");
   }
 
   componentDidMount() {
-    this.socket.on('get messages', (messages) => {
-      this.setState({messages});
+    this.socket.on("get messages", messages => {
+      this.setState({ messages });
     });
 
-    this.socket.on('delete message', (messages) => {
-      this.setState({messages});
+    this.socket.on("delete message", messages => {
+      this.setState({ messages });
     });
 
-    axios
-      .get('http://localhost:3001/keys/generate')
-      .then((response) => {
-        console.log(response);
-        this.setState({code: response.data.key});
-      })
-      .catch(err => console.log(err));
+    this.socket.on("generation response", code => {
+      console.log("code: ", code);
+      this.setState({ code });
+    });
   }
 
   deleteHandler(id) {
-    this.socket.emit('delete message', id);
+    this.socket.emit("delete message", id);
   }
 
   render() {
-    const {code, messages} = this.state;
+    const { code, messages } = this.state;
     return (
       <div className="Teacher">
         <div>
@@ -55,7 +52,9 @@ class Teacher extends Component {
               </div>
             ))
           ) : (
-            <p className="Teacher__message--none">Waiting for student questions...</p>
+            <p className="Teacher__message--none">
+              Waiting for student questions...
+            </p>
           )}
         </div>
       </div>
