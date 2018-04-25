@@ -14,13 +14,12 @@ class Teacher extends Component {
   }
 
   componentDidMount() {
-    this.socket.on("Message", message => {
-      const aggregatedMessages = [...this.state.messages, message];
-      this.setState({ messages: aggregatedMessages });
+    this.socket.on("get messages", messages => {
+      this.setState({ messages });
     });
 
     this.socket.on("delete message", messages => {
-      this.setState({ messages: messages });
+      this.setState({ messages });
     });
   }
 

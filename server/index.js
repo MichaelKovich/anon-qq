@@ -25,11 +25,11 @@ const messages = [];
 io.on("connection", socket => {
   console.log("A user has connected to the system.");
 
-  socket.on("Message", message => {
+  socket.on("send message", message => {
     id = generateID(16);
-    messages.push({ message, id });
+    messages.unshift({ message, id });
     console.log(messages[messages.length - 1]);
-    io.sockets.emit("Message", { message, id });
+    io.sockets.emit("get messages", messages);
   });
 
   socket.on("delete message", id => {

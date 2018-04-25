@@ -15,7 +15,7 @@ class Student extends Component {
   onSubmitHandler = e => {
     e.preventDefault();
     if (this.state.message !== "") {
-      this.socket.emit("Message", this.state.message);
+      this.socket.emit("send message", this.state.message);
       this.setState({ message: "" });
     }
   };
