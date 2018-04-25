@@ -22,7 +22,6 @@ io.on('connection', (socket) => {
 
   socket.on('send message', (message) => {
     messages.unshift({message: message.message, user: message.user, id: rand.generate(16)});
-    console.log(messages[messages.length - 1]);
     io.sockets.emit('get messages', messages);
   });
 
