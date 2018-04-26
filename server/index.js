@@ -4,6 +4,7 @@ const {json} = require('body-parser');
 const http = require('http');
 const socketIo = require('socket.io');
 const rand = require('random-key');
+const _remove = require('lodash/remove');
 
 const port = 3001;
 const app = express();
@@ -59,6 +60,12 @@ io.on('connection', (socket) => {
     } else {
       io.sockets.emit('validation response', false);
     }
+  });
+
+  socket.on('close room', (key) => {
+    const keyIndex = keyHistory.findIndex(singularKey => singularKey === key);
+    keyHistory.splice(keyIndex, 1);
+    _remove(messages, () => message.key === key);
   });
 
   socket.on('disconnect', () => {
