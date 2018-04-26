@@ -34,12 +34,20 @@ class Teacher extends Component {
     this.socket.emit('delete message', {id, key: this.state.code});
   }
 
+  closeRoom() {
+    const {code} = this.state;
+    this.socket.on('close room');
+  }
+
   render() {
     const {code, messages} = this.state;
     return (
       <div className="Teacher">
         <div>
           Your classroom code is: <pre>{code}</pre>
+          <p>
+            <button className="Teacher__exit" onClick={() => this.closeRoom()} />
+          </p>
         </div>
         <div className="Teacher__room">
           {messages && messages[0] ? (
