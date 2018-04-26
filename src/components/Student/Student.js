@@ -59,6 +59,16 @@ class Student extends Component {
         {disabled && (
           <form onSubmit={this.onCodeSubmitHandler}>
             <input
+              className="Student__input Student__input--code"
+              onChange={e => this.setState({ code: e.target.value })}
+              value={code}
+              type="text"
+              placeholder="Code"
+              style={{
+                fontFamily: "'Courier New', Courier, monospace"
+              }}
+            />
+            <input
               autoFocus
               className="Student__input Student__input--firstname"
               onChange={e => this.setState({ firstName: e.target.value })}
@@ -73,13 +83,7 @@ class Student extends Component {
               type="text"
               placeholder="Last Name"
             />
-            <input
-              className="Student__input Student__input--code"
-              onChange={e => this.setState({ code: e.target.value })}
-              value={code}
-              type="text"
-              placeholder="Code"
-            />
+
             <button
               style={{
                 display: 'none'

@@ -7,8 +7,9 @@
   outline: none;
   margin-bottom: 10px;
   padding: 20px;
-  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
     sans-serif;
+  font-size: 0.8rem;
 }
 
 .Student__input:focus {
