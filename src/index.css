@@ -1,15 +1,20 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:400,700");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Slab:400,700");
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab:400,700');
 
 :root {
-  --black: rgb(0, 27, 67);
+  --black: rgb(0, 27, 67, 0.84);
+  --white: rgba(255, 255, 255, 1);
+  --gray: rgba(0, 0, 0, 0.54);
+  --light-gray: rgba(0, 0, 0, 0.15);
+  --box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.08);
+  --highlight: rgba(107, 232, 209, 0.7);
 }
 
 html,
 body {
   margin: 0;
   padding: 0;
-  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
     sans-serif;
 }
 
