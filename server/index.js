@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { json } = require('body-parser');
+const {json} = require('body-parser');
 const http = require('http');
 const socketIo = require('socket.io');
 const rand = require('random-key');
@@ -18,24 +18,22 @@ const io = socketIo(server);
 const messages = [];
 const keyHistory = [];
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
 
-  socket.on('send message', message => {
+  socket.on('send message', (message) => {
     messages.unshift({
       message: message.message,
       key: message.key,
       user: message.user,
-      id: rand.generate(16)
+      id: rand.generate(16),
     });
     console.log(messages);
-    const messagesForRoom = messages.filter(
-      oneMessage => oneMessage.key === message.key
-    );
+    const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
     io.sockets.in(message.key).emit('get messages', messagesForRoom);
   });
 
-  socket.on('delete message', ({ id, key }) => {
+  socket.on('delete message', ({id, key}) => {
     const index = messages.findIndex(message => message.id === id);
     if (index !== -1) {
       messages.splice(index, 1);
@@ -44,7 +42,7 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('generate code', input => {
+  socket.on('generate code', (input) => {
     console.log('Generating key...');
     const key = rand.generate(6);
     keyHistory.push(key);
@@ -53,7 +51,7 @@ io.on('connection', socket => {
     socket.join(key);
   });
 
-  socket.on('verify code', key => {
+  socket.on('verify code', (key) => {
     console.log('Validating key...');
     console.log('Input Key: ', key);
     console.log('Key History: ', keyHistory);
@@ -65,7 +63,7 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('close room', key => {
+  socket.on('close room', (key) => {
     console.log('Closing room with Key: ', key);
     const keyIndex = keyHistory.findIndex(singularKey => singularKey === key);
     keyHistory.splice(keyIndex, 1);

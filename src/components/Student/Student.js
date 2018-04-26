@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import socketIOClient from 'socket.io-client';
 
 import './Student.css';
@@ -12,73 +12,73 @@ class Student extends Component {
       disabled: true,
       firstName: '',
       lastName: '',
-      messages: []
+      messages: [],
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
 
   componentDidMount() {
     this.socket.on('delete message', messages => {
-      this.setState({ messages });
+      this.setState({messages});
     });
 
     this.socket.on('get messages', messages => {
-      this.setState({ messages });
+      this.setState({messages});
     });
   }
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
-    let { code, firstName, lastName } = this.state;
+    let {code, firstName, lastName} = this.state;
     if (code && firstName && lastName) {
       this.socket.emit('verify code', this.state.code);
       this.socket.on('validation response', response => {
-        this.setState({ disabled: !response });
+        this.setState({disabled: !response});
       });
     }
   };
 
   onSubmitHandler = e => {
     e.preventDefault();
-    let { message, firstName, lastName, code } = this.state;
+    let {message, firstName, lastName, code} = this.state;
     if (message) {
       this.socket.emit('send message', {
         user: `${firstName} ${lastName}`,
         message,
-        key: code
+        key: code,
       });
-      this.setState({ message: '' });
+      this.setState({message: ''});
     }
   };
 
   render() {
-    let { message, disabled, code, messages, firstName, lastName } = this.state;
+    let {message, disabled, code, messages, firstName, lastName} = this.state;
 
     return (
       <div className="Student">
         {disabled && (
           <form onSubmit={this.onCodeSubmitHandler}>
             <input
+              autoFocus
               className="Student__input Student__input--code"
-              onChange={e => this.setState({ code: e.target.value })}
+              onChange={e => this.setState({code: e.target.value})}
               value={code}
               type="text"
               placeholder="Code"
               style={{
-                fontFamily: "'Courier New', Courier, monospace"
+                fontFamily: "'Courier New', Courier, monospace",
               }}
             />
             <input
-              autoFocus
               className="Student__input Student__input--firstname"
-              onChange={e => this.setState({ firstName: e.target.value })}
+              onChange={e => this.setState({firstName: e.target.value})}
               value={firstName}
               type="text"
               placeholder="First Name"
             />
             <input
               className="Student__input Student__input--lastname"
-              onChange={e => this.setState({ lastName: e.target.value })}
+              onChange={e => this.setState({lastName: e.target.value})}
               value={lastName}
               type="text"
               placeholder="Last Name"
@@ -86,7 +86,7 @@ class Student extends Component {
 
             <button
               style={{
-                display: 'none'
+                display: 'none',
               }}
             />
           </form>
@@ -96,7 +96,7 @@ class Student extends Component {
           <input
             disabled={disabled}
             className="Student__input Student__input--question"
-            onChange={e => this.setState({ message: e.target.value })}
+            onChange={e => this.setState({message: e.target.value})}
             value={message}
             type="text"
             placeholder="Question"
@@ -110,9 +110,7 @@ class Student extends Component {
               </div>
             ))
           ) : (
-            <p className="Student__message--none">
-              Waiting for student questions...
-            </p>
+            <p className="Student__message--none">Waiting for student questions...</p>
           )}
         </div>
       </div>
