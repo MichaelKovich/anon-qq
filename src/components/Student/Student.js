@@ -12,7 +12,8 @@ class Student extends Component {
       disabled: true,
       firstName: '',
       lastName: '',
-      messages: []
+      messages: [],
+      invalid: false
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
@@ -33,7 +34,10 @@ class Student extends Component {
     if (code && firstName && lastName) {
       this.socket.emit('verify code', this.state.code);
       this.socket.on('validation response', response => {
-        this.setState({ disabled: !response });
+        this.setState({
+          disabled: !response,
+          invalid: !response
+        });
       });
     }
   };
@@ -52,7 +56,15 @@ class Student extends Component {
   };
 
   render() {
-    let { message, disabled, code, messages, firstName, lastName } = this.state;
+    let {
+      message,
+      disabled,
+      code,
+      messages,
+      firstName,
+      lastName,
+      invalid
+    } = this.state;
 
     return (
       <div className="Student">
@@ -65,7 +77,8 @@ class Student extends Component {
               type="text"
               placeholder="Code"
               style={{
-                fontFamily: "'Courier New', Courier, monospace"
+                fontFamily: "'Courier New', Courier, monospace",
+                border: invalid ? '1px solid #ff7675' : '1px solid #ccc;'
               }}
             />
             <input
