@@ -18,23 +18,26 @@ const io = socketIo(server);
 const messages = [];
 const keyHistory = new Set();
 
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('A user has connected to the system.');
-
-  socket.on('send message', (message) => {
+  socket.on('send message', message => {
     if (keyHistory.has(message.key)) {
       messages.unshift({
         message: message.message,
         key: message.key,
         user: message.user,
-        id: rand.generate(16),
+        id: rand.generate(16)
       });
-      const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
+      const messagesForRoom = messages.filter(
+        oneMessage => oneMessage.key === message.key
+      );
       io.sockets.in(message.key).emit('get messages', messagesForRoom);
     } else {
       io.sockets
         .in(message.key)
-        .emit('get messages', [{message: 'This room has been closed by the instructor.'}]);
+        .emit('get messages', [
+          {message: 'This room has been closed by the instructor.'}
+        ]);
     }
   });
 
@@ -47,7 +50,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('generate code', (input) => {
+  socket.on('generate code', input => {
     console.log('Generating key...');
     let key = rand.generate(6);
     while (keyHistory.has(key)) {
@@ -59,19 +62,22 @@ io.on('connection', (socket) => {
     socket.join(key);
   });
 
-  socket.on('verify code', (key) => {
+  socket.on('verify code', key => {
     console.log('Validating key...');
     console.log('Input Key: ', key);
     console.log('Key History: ', keyHistory);
     if (keyHistory.has(key)) {
       socket.join(key);
       io.sockets.emit('validation response', true);
+      io.sockets
+        .in(key)
+        .emit('number of students', io.sockets.adapter.rooms[key].length - 1);
     } else {
       io.sockets.emit('validation response', false);
     }
   });
 
-  socket.on('close room', (key) => {
+  socket.on('close room', key => {
     console.log('Closing room with Key: ', key);
     // let keyHistoryArr = [...keyHistory]
     // const keyIndex = keyHistoryArr.findIndex(singularKey => singularKey === key);
@@ -82,6 +88,17 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
+    if (keyHistory.size) {
+      keyHistory.forEach(key => {
+        io.sockets
+          .in(key)
+          .emit(
+            'number of students',
+            io.sockets.adapter.rooms[key] &&
+              io.sockets.adapter.rooms[key].length - 1
+          );
+      });
+    }
   });
 });
 
