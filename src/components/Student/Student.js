@@ -71,6 +71,7 @@ class Student extends Component {
         {disabled && (
           <form onSubmit={this.onCodeSubmitHandler}>
             <input
+              autoFocus
               className="Student__input Student__input--code"
               onChange={e => this.setState({ code: e.target.value })}
               value={code}
@@ -82,7 +83,6 @@ class Student extends Component {
               }}
             />
             <input
-              autoFocus
               className="Student__input Student__input--firstname"
               onChange={e => this.setState({ firstName: e.target.value })}
               value={firstName}
