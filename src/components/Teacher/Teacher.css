@@ -35,3 +35,9 @@
   text-transform: uppercase;
   font-size: 0.75rem;
 }
+
+.Teacher__exit:hover,
+.Teacher__exit:focus {
+  border: 1px solid var(--black);
+  color: var(--black);
+}

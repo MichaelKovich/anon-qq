@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import socketIOClient from 'socket.io-client';
 
 import './Teacher.css';
@@ -8,45 +8,47 @@ class Teacher extends Component {
     super(props);
     this.state = {
       code: null,
-      messages: [],
+      messages: []
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
     this.socket.emit('generate code');
   }
 
   componentDidMount() {
-    this.socket.on('get messages', (messages) => {
-      this.setState({messages});
+    this.socket.on('get messages', messages => {
+      this.setState({ messages });
     });
 
-    this.socket.on('delete message', (messages) => {
-      this.setState({messages});
+    this.socket.on('delete message', messages => {
+      this.setState({ messages });
     });
 
-    this.socket.on('generation response', (code) => {
+    this.socket.on('generation response', code => {
       if (!this.state.code) {
-        this.setState({code});
+        this.setState({ code });
       }
     });
   }
 
   deleteHandler(id) {
-    this.socket.emit('delete message', {id, key: this.state.code});
+    this.socket.emit('delete message', { id, key: this.state.code });
   }
 
-  closeRoom() {
-    const {code} = this.state;
-    this.socket.on('close room');
-  }
+  closeRoom = () => {
+    const { code } = this.state;
+    this.socket.emit('close room', code);
+  };
 
   render() {
-    const {code, messages} = this.state;
+    const { code, messages } = this.state;
     return (
       <div className="Teacher">
         <div>
           Your classroom code is: <pre>{code}</pre>
           <p>
-            <button className="Teacher__exit" onClick={() => this.closeRoom()} />
+            <button className="Teacher__exit" onClick={this.closeRoom}>
+              Close Room
+            </button>
           </p>
         </div>
         <div className="Teacher__room">
@@ -61,7 +63,9 @@ class Teacher extends Component {
               </div>
             ))
           ) : (
-            <p className="Teacher__message--none">Waiting for student questions...</p>
+            <p className="Teacher__message--none">
+              Waiting for student questions...
+            </p>
           )}
         </div>
       </div>
