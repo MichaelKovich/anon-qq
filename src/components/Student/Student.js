@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import socketIOClient from 'socket.io-client';
 
 import './Student.css';
@@ -13,30 +13,30 @@ class Student extends Component {
       firstName: '',
       lastName: '',
       messages: [],
-      invalid: false
+      invalid: false,
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
 
   componentDidMount() {
     this.socket.on('delete message', messages => {
-      this.setState({ messages });
+      this.setState({messages});
     });
 
     this.socket.on('get messages', messages => {
-      this.setState({ messages });
+      this.setState({messages});
     });
   }
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
-    let { code, firstName, lastName } = this.state;
+    let {code, firstName, lastName} = this.state;
     if (code && firstName && lastName) {
       this.socket.emit('verify code', this.state.code);
       this.socket.on('validation response', response => {
         this.setState({
           disabled: !response,
-          invalid: !response
+          invalid: !response,
         });
       });
     }
@@ -44,27 +44,19 @@ class Student extends Component {
 
   onSubmitHandler = e => {
     e.preventDefault();
-    let { message, firstName, lastName, code } = this.state;
+    let {message, firstName, lastName, code} = this.state;
     if (message) {
       this.socket.emit('send message', {
         user: `${firstName} ${lastName}`,
         message,
-        key: code
+        key: code,
       });
-      this.setState({ message: '' });
+      this.setState({message: ''});
     }
   };
 
   render() {
-    let {
-      message,
-      disabled,
-      code,
-      messages,
-      firstName,
-      lastName,
-      invalid
-    } = this.state;
+    let {message, disabled, code, messages, firstName, lastName, invalid} = this.state;
 
     return (
       <div className="Student">
@@ -73,33 +65,36 @@ class Student extends Component {
             <input
               autoFocus
               className="Student__input Student__input--code"
-              onChange={e => this.setState({ code: e.target.value })}
+              onChange={e => this.setState({code: e.target.value})}
               value={code}
               type="text"
+              required
               placeholder="Code"
               style={{
                 fontFamily: "'Courier New', Courier, monospace",
-                border: invalid ? '1px solid #ff7675' : '1px solid #ccc;'
+                border: invalid ? '1px solid #ff7675' : '1px solid #ccc;',
               }}
             />
             <input
               className="Student__input Student__input--firstname"
-              onChange={e => this.setState({ firstName: e.target.value })}
+              onChange={e => this.setState({firstName: e.target.value})}
               value={firstName}
               type="text"
+              required
               placeholder="First Name"
             />
             <input
               className="Student__input Student__input--lastname"
-              onChange={e => this.setState({ lastName: e.target.value })}
+              onChange={e => this.setState({lastName: e.target.value})}
               value={lastName}
               type="text"
+              required
               placeholder="Last Name"
             />
 
             <button
               style={{
-                display: 'none'
+                display: 'none',
               }}
             />
           </form>
@@ -109,9 +104,10 @@ class Student extends Component {
           <input
             disabled={disabled}
             className="Student__input Student__input--question"
-            onChange={e => this.setState({ message: e.target.value })}
+            onChange={e => this.setState({message: e.target.value})}
             value={message}
             type="text"
+            required
             placeholder="Question"
           />
         </form>
@@ -123,9 +119,7 @@ class Student extends Component {
               </div>
             ))
           ) : (
-            <p className="Student__message--none">
-              Waiting for student questions...
-            </p>
+            <p className="Student__message--none">Waiting for student questions...</p>
           )}
         </div>
       </div>

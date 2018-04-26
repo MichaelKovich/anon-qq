@@ -16,21 +16,26 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const messages = [];
-const keyHistory = [];
+const keyHistory = new Set();
 
 io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
 
   socket.on('send message', (message) => {
-    messages.unshift({
-      message: message.message,
-      key: message.key,
-      user: message.user,
-      id: rand.generate(16),
-    });
-    console.log(messages);
-    const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
-    io.sockets.in(message.key).emit('get messages', messagesForRoom);
+    if (keyHistory.has(message.key)) {
+      messages.unshift({
+        message: message.message,
+        key: message.key,
+        user: message.user,
+        id: rand.generate(16),
+      });
+      const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
+      io.sockets.in(message.key).emit('get messages', messagesForRoom);
+    } else {
+      io.sockets
+        .in(message.key)
+        .emit('get messages', [{message: 'This room has been closed by the instructor.'}]);
+    }
   });
 
   socket.on('delete message', ({id, key}) => {
@@ -44,8 +49,11 @@ io.on('connection', (socket) => {
 
   socket.on('generate code', (input) => {
     console.log('Generating key...');
-    const key = rand.generate(6);
-    keyHistory.push(key);
+    let key = rand.generate(6);
+    while (keyHistory.has(key)) {
+      key = rand.generate(6);
+    }
+    keyHistory.add(key);
     console.log('Key History: ', keyHistory);
     io.sockets.emit('generation response', key);
     socket.join(key);
@@ -55,7 +63,7 @@ io.on('connection', (socket) => {
     console.log('Validating key...');
     console.log('Input Key: ', key);
     console.log('Key History: ', keyHistory);
-    if (keyHistory.includes(key)) {
+    if (keyHistory.has(key)) {
       socket.join(key);
       io.sockets.emit('validation response', true);
     } else {
@@ -65,8 +73,9 @@ io.on('connection', (socket) => {
 
   socket.on('close room', (key) => {
     console.log('Closing room with Key: ', key);
-    const keyIndex = keyHistory.findIndex(singularKey => singularKey === key);
-    keyHistory.splice(keyIndex, 1);
+    // let keyHistoryArr = [...keyHistory]
+    // const keyIndex = keyHistoryArr.findIndex(singularKey => singularKey === key);
+    keyHistory.delete(key);
     console.log('Key History: ', keyHistory);
     _remove(messages, message => message.key === key);
   });
