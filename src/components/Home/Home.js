@@ -1,18 +1,16 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./Home.css";
+import React from 'react';
+import {Link} from 'react-router-dom';
+import './Home.css';
 
-const Home = () => {
-  return (
-    <div className="Home">
-      <Link to="/teacher" className="Home__link Home__link--teacher">
-        Teacher
-      </Link>
-      <Link to="/student" className="Home__link Home__link--student">
-        Student
-      </Link>
-    </div>
-  );
-};
+const Home = () => (
+  <div className="Home">
+    <Link to="/instructor" className="Home__link Home__link--teacher">
+      Instructor
+    </Link>
+    <Link to="/student" className="Home__link Home__link--student">
+      Students / Mentors
+    </Link>
+  </div>
+);
 
 export default Home;

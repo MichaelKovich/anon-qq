@@ -18,26 +18,22 @@ const io = socketIo(server);
 const messages = [];
 const keyHistory = new Set();
 
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
-  socket.on('send message', message => {
+  socket.on('send message', (message) => {
     if (keyHistory.has(message.key)) {
       messages.unshift({
         message: message.message,
         key: message.key,
         user: message.user,
-        id: rand.generate(16)
+        id: rand.generate(16),
       });
-      const messagesForRoom = messages.filter(
-        oneMessage => oneMessage.key === message.key
-      );
+      const messagesForRoom = messages.filter(oneMessage => oneMessage.key === message.key);
       io.sockets.in(message.key).emit('get messages', messagesForRoom);
     } else {
       io.sockets
         .in(message.key)
-        .emit('get messages', [
-          {message: 'This room has been closed by the instructor.'}
-        ]);
+        .emit('get messages', [{message: 'This room has been closed by the instructor.'}]);
     }
   });
 
@@ -50,37 +46,52 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('generate code', input => {
+  socket.on('generate key', (input) => {
     console.log('Generating key...');
-    let key = rand.generate(6);
-    while (keyHistory.has(key)) {
-      key = rand.generate(6);
+    let classroomKey = rand.generate(6);
+    const mentorKey = rand.generate(3);
+    while (keyHistory.has(classroomKey)) {
+      classroomKey = rand.generate(6);
     }
-    keyHistory.add(key);
+    const keyRing = {classroomKey, mentorKey};
+    keyHistory.add(keyRing);
+
     console.log('Key History: ', keyHistory);
-    io.sockets.emit('generation response', key);
-    socket.join(key);
+    io.sockets.emit('generation response', keyRing);
+    socket.join(keyRing.classroomKey);
   });
 
-  socket.on('verify code', key => {
+  socket.on('verify key', (keyRing) => {
+    const {classroomKey, mentorKey} = keyRing;
+
     console.log('Validating key...');
-    console.log('Input Key: ', key);
+    console.log('Classroom Key: ', classroomKey);
+    mentorKey && console.log('Mentor Key: ', mentorKey);
     console.log('Key History: ', keyHistory);
-    if (keyHistory.has(key)) {
-      socket.join(key);
-      io.sockets.emit('validation response', true);
-      io.sockets
-        .in(key)
-        .emit('number of students', io.sockets.adapter.rooms[key].length - 1);
+
+    const keyHistoryArray = [...keyHistory];
+
+    if (keyHistoryArray.findIndex(keyRing => keyRing.classroomKey === classroomKey) !== -1) {
+      if (keyHistoryArray.findIndex(keyRing => keyRing.mentorKey === mentorKey) !== -1) {
+        socket.join(classroomKey);
+        io.sockets.emit('validation response', {classroomKey: true, mentorKey: true});
+        io.sockets
+          .in(classroomKey)
+          .emit('number of students', io.sockets.adapter.rooms[classroomKey].length - 1);
+      } else {
+        socket.join(classroomKey);
+        io.sockets.emit('validation response', {classroomKey: true, mentorKey: false});
+        io.sockets
+          .in(classroomKey)
+          .emit('number of students', io.sockets.adapter.rooms[classroomKey].length - 1);
+      }
     } else {
-      io.sockets.emit('validation response', false);
+      io.sockets.emit('validation response', {classroomKey: false, mentorKey: false});
     }
   });
 
-  socket.on('close room', key => {
+  socket.on('close room', (key) => {
     console.log('Closing room with Key: ', key);
-    // let keyHistoryArr = [...keyHistory]
-    // const keyIndex = keyHistoryArr.findIndex(singularKey => singularKey === key);
     keyHistory.delete(key);
     console.log('Key History: ', keyHistory);
     _remove(messages, message => message.key === key);
@@ -89,13 +100,12 @@ io.on('connection', socket => {
   socket.on('disconnect', () => {
     console.log('User disconnected');
     if (keyHistory.size) {
-      keyHistory.forEach(key => {
+      keyHistory.forEach((key) => {
         io.sockets
           .in(key)
           .emit(
             'number of students',
-            io.sockets.adapter.rooms[key] &&
-              io.sockets.adapter.rooms[key].length - 1
+            io.sockets.adapter.rooms[key] && io.sockets.adapter.rooms[key].length - 1,
           );
       });
     }
