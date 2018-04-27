@@ -8,12 +8,14 @@ class Student extends Component {
     super(props);
     this.state = {
       message: '',
-      code: '',
+      classroomKey: '',
+      mentorKey: '',
       disabled: true,
       firstName: '',
       lastName: '',
       messages: [],
-      invalid: false,
+      invalidClassroomKey: false,
+      invalidMentorKey: false
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
@@ -30,13 +32,15 @@ class Student extends Component {
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
-    let {code, firstName, lastName} = this.state;
-    if (code && firstName && lastName) {
-      this.socket.emit('verify code', this.state.code);
-      this.socket.on('validation response', response => {
+    let {classroomKey, mentorKey, firstName, lastName} = this.state;
+    if (classroomKey && firstName && lastName) {
+      this.socket.emit('verify key', {classroomKey, mentorKey});
+      this.socket.on('validation response', keyRing => {
+        let {classroomKeyResponse, mentorKeyResponse} = keyRing;
         this.setState({
-          disabled: !response,
-          invalid: !response,
+          disabled: !(classroomKeyResponse && mentorKeyResponse),
+          invalidClassroomKey: !classroomKeyResponse,
+          invalidMentorKey: mentorKey !== '' && !mentorKeyResponse
         });
       });
     }
@@ -44,19 +48,29 @@ class Student extends Component {
 
   onSubmitHandler = e => {
     e.preventDefault();
-    let {message, firstName, lastName, code} = this.state;
+    let {message, firstName, lastName, classroomKey} = this.state;
     if (message) {
       this.socket.emit('send message', {
         user: `${firstName} ${lastName}`,
         message,
-        key: code,
+        classroomKey
       });
       this.setState({message: ''});
     }
   };
 
   render() {
-    let {message, disabled, code, messages, firstName, lastName, invalid} = this.state;
+    let {
+      message,
+      disabled,
+      classroomKey,
+      mentorKey,
+      messages,
+      firstName,
+      lastName,
+      invalidClassroomKey,
+      invalidMentorKey
+    } = this.state;
 
     return (
       <div className="Student">
@@ -64,15 +78,30 @@ class Student extends Component {
           <form onSubmit={this.onCodeSubmitHandler}>
             <input
               autoFocus
-              className="Student__input Student__input--code"
-              onChange={e => this.setState({code: e.target.value})}
-              value={code}
+              className="Student__input"
+              onChange={e => this.setState({classroomKey: e.target.value})}
+              value={classroomKey}
               type="text"
               required
-              placeholder="Code"
+              placeholder="Classroom Code"
               style={{
                 fontFamily: "'Courier New', Courier, monospace",
-                border: invalid ? '1px solid #ff7675' : '1px solid #ccc;',
+                border: invalidClassroomKey
+                  ? '1px solid #ff7675'
+                  : '1px solid #ccc;'
+              }}
+            />
+            <input
+              className="Student__input"
+              onChange={e => this.setState({mentorKey: e.target.value})}
+              value={mentorKey}
+              type="text"
+              placeholder="Mentor Code"
+              style={{
+                fontFamily: "'Courier New', Courier, monospace",
+                border: invalidMentorKey
+                  ? '1px solid #ff7675'
+                  : '1px solid #ccc;'
               }}
             />
             <input
@@ -94,7 +123,7 @@ class Student extends Component {
 
             <button
               style={{
-                display: 'none',
+                display: 'none'
               }}
             />
           </form>
@@ -115,11 +144,14 @@ class Student extends Component {
           {messages && messages[0] ? (
             messages.map(message => (
               <div className="Student__message" key={message.id}>
+                {mentorKey !== '' && !invalidMentorKey && `${message.user}: `}
                 {message.message}
               </div>
             ))
           ) : (
-            <p className="Student__message--none">Waiting for student questions...</p>
+            <p className="Student__message--none">
+              Waiting for student questions...
+            </p>
           )}
         </div>
       </div>

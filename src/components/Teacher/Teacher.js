@@ -7,12 +7,12 @@ class Teacher extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      code: null,
+      key: null,
       messages: [],
       numberOfStudents: 0
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
-    this.socket.emit('generate code');
+    this.socket.emit('generate key');
   }
 
   componentDidMount() {
@@ -24,9 +24,9 @@ class Teacher extends Component {
       this.setState({messages});
     });
 
-    this.socket.on('generation response', code => {
-      if (!this.state.code) {
-        this.setState({code});
+    this.socket.on('generation response', key => {
+      if (!this.state.key) {
+        this.setState({key});
       }
     });
 
@@ -36,23 +36,27 @@ class Teacher extends Component {
   }
 
   deleteHandler(id) {
-    this.socket.emit('delete message', {id, key: this.state.code});
+    this.socket.emit('delete message', {id, key: this.state.key.classroomKey});
   }
 
   closeRoom = () => {
-    const {code} = this.state;
-    this.socket.emit('close room', code);
+    const {key} = this.state;
+    this.socket.emit('close room', key.classroomKey);
     this.props.history.push('/');
   };
 
   render() {
-    const {code, messages, numberOfStudents} = this.state;
+    const {key, messages, numberOfStudents} = this.state;
     return (
       <div className="Teacher">
         <div className="Teacher__header">
           <div className="Teacher__code-text">
             <p>Your classroom code is: </p>
-            <pre className="Teacher__code">{code}</pre>
+            <pre className="Teacher__code">{key.classroomKey}</pre>
+          </div>
+          <div className="Teacher__code-text">
+            <p>Your mentor code is: </p>
+            <pre className="Teacher__code">{key.mentorKey}</pre>
           </div>
           <div className="Teacher__number-text">
             <p>Number of students in room:</p>
