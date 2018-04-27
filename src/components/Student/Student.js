@@ -142,30 +142,37 @@ class Student extends Component {
             />
           </form>
         )}
-        Enter your questions here:
-        <form onSubmit={this.onSubmitHandler}>
-          <input
-            disabled={bucketOfMonkeys}
-            className="Student__input Student__input--question"
-            onChange={e => this.setState({message: e.target.value})}
-            value={message}
-            type="text"
-            required
-            placeholder="Question"
-          />
-        </form>
-        <div className="Student__room">
-          {messages && messages[0] ? (
-            messages.map(message => (
-              <div className="Student__message" key={message.id}>
-                {validMentorKey && `${message.user}: `}
-                {message.message}
-              </div>
-            ))
-          ) : (
-            <p className="Student__message--none">Waiting for student questions...</p>
-          )}
-        </div>
+        {validClassroomKey ? (
+          <div>
+            You're currently logged in as a {mentorKey && validMentorKey ? 'mentor' : 'student'}.
+            <br />
+            <br />
+            Enter your questions here:
+            <form onSubmit={this.onSubmitHandler}>
+              <input
+                disabled={bucketOfMonkeys}
+                className="Student__input Student__input--question"
+                onChange={e => this.setState({message: e.target.value})}
+                value={message}
+                type="text"
+                required
+                placeholder="Question"
+              />
+            </form>
+            <div className="Student__room">
+              {messages && messages[0] ? (
+                messages.map(message => (
+                  <div className="Student__message" key={message.id}>
+                    {validMentorKey && `${message.user}: `}
+                    {message.message}
+                  </div>
+                ))
+              ) : (
+                <p className="Student__message--none">Waiting for student questions...</p>
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }
