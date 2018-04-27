@@ -1,16 +1,16 @@
 .Header {
-  background: rgb(0, 27, 67);
-  color: white;
+  background: var(--black);
+  color: var(--white);
   height: 100px;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Roboto Slab", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
-    "Helvetica Neue", sans-serif;
+  font-family: 'Roboto Slab', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
   font-size: 2rem;
 }
 
 .Header > .Link__none {
-  color: white;
+  color: var(--white);
 }

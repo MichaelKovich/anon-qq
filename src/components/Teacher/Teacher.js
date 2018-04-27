@@ -50,10 +50,14 @@ class Teacher extends Component {
     return (
       <div className="Teacher">
         <div className="Teacher__header">
-          Your classroom code is: <pre>{code}</pre>
-          <p className="Teacher__number_students">
-            Number of students in room: {numberOfStudents}
-          </p>
+          <div className="Teacher__code-text">
+            <p>Your classroom code is: </p>
+            <pre className="Teacher__code">{code}</pre>
+          </div>
+          <div className="Teacher__number-text">
+            <p>Number of students in room:</p>
+            <pre className="Teacher__number-students">{numberOfStudents}</pre>
+          </div>
           <button className="Teacher__exit" onClick={this.closeRoom}>
             Close Room
           </button>
