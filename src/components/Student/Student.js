@@ -32,12 +32,13 @@ class Student extends Component {
 
   onCodeSubmitHandler = e => {
     e.preventDefault();
+    this.setState({submitted: true});
+
     let {classroomKey, mentorKey, firstName, lastName} = this.state;
     if (classroomKey && firstName && lastName) {
       this.socket.emit('verify key', {classroomKey, mentorKey});
       this.socket.on('validation response', keyRing => {
         this.setState({
-          submitted: true,
           validClassroomKey: keyRing.classroomKey,
           validMentorKey: keyRing.mentorKey,
         });

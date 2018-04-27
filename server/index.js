@@ -51,11 +51,11 @@ io.on('connection', (socket) => {
     let classroomKey = rand.generate(6);
     const mentorKey = rand.generate(3);
 
-    let index = keyHistory.findIndex(keyRing => keyRing.classroomKey === key);
+    let index = keyHistory.findIndex(keyRing => keyRing.classroomKey === classroomKey);
 
     while (index !== -1) {
       classroomKey = rand.generate(6);
-      index = keyHistory.findIndex(keyRing => keyRing.classroomKey === key);
+      index = keyHistory.findIndex(keyRing => keyRing.classroomKey === classroomKey);
     }
 
     const keyRing = {classroomKey, mentorKey};
@@ -77,19 +77,28 @@ io.on('connection', (socket) => {
     if (keyHistory.findIndex(keyRing => keyRing.classroomKey === classroomKey) !== -1) {
       if (keyHistory.findIndex(keyRing => keyRing.mentorKey === mentorKey) !== -1) {
         socket.join(classroomKey);
-        io.sockets.emit('validation response', {classroomKey: true, mentorKey: true});
+        io.sockets.connected[socket.id].emit('validation response', {
+          classroomKey: true,
+          mentorKey: true,
+        });
         io.sockets
           .in(classroomKey)
           .emit('number of students', io.sockets.adapter.rooms[classroomKey].length - 1);
       } else {
         socket.join(classroomKey);
-        io.sockets.emit('validation response', {classroomKey: true, mentorKey: false});
+        io.sockets.connected[socket.id].emit('validation response', {
+          classroomKey: true,
+          mentorKey: false,
+        });
         io.sockets
           .in(classroomKey)
           .emit('number of students', io.sockets.adapter.rooms[classroomKey].length - 1);
       }
     } else {
-      io.sockets.emit('validation response', {classroomKey: false, mentorKey: false});
+      io.sockets.connected[socket.id].emit('validation response', {
+        classroomKey: false,
+        mentorKey: false,
+      });
     }
   });
 
