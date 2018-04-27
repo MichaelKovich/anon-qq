@@ -21,7 +21,8 @@ const keyHistory = new Set();
 io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
   socket.on('send message', (message) => {
-    if (keyHistory.has(message.key)) {
+    const keyHistoryArray = [...keyHistory];
+    if (keyHistoryArray.findIndex(keyRing => keyRing.classroomKey === message.key) !== -1) {
       messages.unshift({
         message: message.message,
         key: message.key,
@@ -43,6 +44,7 @@ io.on('connection', (socket) => {
       messages.splice(index, 1);
       const messagesForRoom = messages.filter(message => message.key === key);
       io.sockets.in(key).emit('delete message', messagesForRoom);
+      console.log(messagesForRoom);
     }
   });
 

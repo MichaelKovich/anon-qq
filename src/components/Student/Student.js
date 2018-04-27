@@ -10,12 +10,12 @@ class Student extends Component {
       message: '',
       classroomKey: '',
       mentorKey: '',
-      disabled: true,
       firstName: '',
       lastName: '',
       messages: [],
-      invalidClassroomKey: false,
-      invalidMentorKey: false
+      submitted: false,
+      validClassroomKey: false,
+      validMentorKey: false,
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
@@ -36,11 +36,10 @@ class Student extends Component {
     if (classroomKey && firstName && lastName) {
       this.socket.emit('verify key', {classroomKey, mentorKey});
       this.socket.on('validation response', keyRing => {
-        let {classroomKeyResponse, mentorKeyResponse} = keyRing;
         this.setState({
-          disabled: !(classroomKeyResponse && mentorKeyResponse),
-          invalidClassroomKey: !classroomKeyResponse,
-          invalidMentorKey: mentorKey !== '' && !mentorKeyResponse
+          submitted: true,
+          validClassroomKey: keyRing.classroomKey,
+          validMentorKey: keyRing.mentorKey,
         });
       });
     }
@@ -53,7 +52,7 @@ class Student extends Component {
       this.socket.emit('send message', {
         user: `${firstName} ${lastName}`,
         message,
-        classroomKey
+        key: classroomKey,
       });
       this.setState({message: ''});
     }
@@ -62,19 +61,25 @@ class Student extends Component {
   render() {
     let {
       message,
-      disabled,
       classroomKey,
       mentorKey,
       messages,
       firstName,
       lastName,
-      invalidClassroomKey,
-      invalidMentorKey
+      submitted,
+      validClassroomKey,
+      validMentorKey,
     } = this.state;
+
+    const bucketOfMonkeys = !(
+      submitted &&
+      validClassroomKey &&
+      (!mentorKey || (mentorKey && validMentorKey))
+    );
 
     return (
       <div className="Student">
-        {disabled && (
+        {bucketOfMonkeys && (
           <form onSubmit={this.onCodeSubmitHandler}>
             <input
               autoFocus
@@ -86,9 +91,13 @@ class Student extends Component {
               placeholder="Classroom Code"
               style={{
                 fontFamily: "'Courier New', Courier, monospace",
-                border: invalidClassroomKey
-                  ? '1px solid #ff7675'
-                  : '1px solid #ccc;'
+                border: classroomKey
+                  ? submitted && validClassroomKey
+                    ? '1px solid #ccc'
+                    : submitted && !validClassroomKey
+                      ? '1px solid #ff7675'
+                      : '1px solid #ccc'
+                  : '1px solid #ccc',
               }}
             />
             <input
@@ -99,9 +108,13 @@ class Student extends Component {
               placeholder="Mentor Code"
               style={{
                 fontFamily: "'Courier New', Courier, monospace",
-                border: invalidMentorKey
-                  ? '1px solid #ff7675'
-                  : '1px solid #ccc;'
+                border: mentorKey
+                  ? submitted && validMentorKey
+                    ? '1px solid #ccc'
+                    : submitted && !validMentorKey
+                      ? '1px solid #ff7675'
+                      : '1px solid #ccc'
+                  : '1px solid #ccc',
               }}
             />
             <input
@@ -123,7 +136,7 @@ class Student extends Component {
 
             <button
               style={{
-                display: 'none'
+                display: 'none',
               }}
             />
           </form>
@@ -131,7 +144,7 @@ class Student extends Component {
         Enter your questions here:
         <form onSubmit={this.onSubmitHandler}>
           <input
-            disabled={disabled}
+            disabled={bucketOfMonkeys}
             className="Student__input Student__input--question"
             onChange={e => this.setState({message: e.target.value})}
             value={message}
@@ -144,14 +157,12 @@ class Student extends Component {
           {messages && messages[0] ? (
             messages.map(message => (
               <div className="Student__message" key={message.id}>
-                {mentorKey !== '' && !invalidMentorKey && `${message.user}: `}
+                {validMentorKey && `${message.user}: `}
                 {message.message}
               </div>
             ))
           ) : (
-            <p className="Student__message--none">
-              Waiting for student questions...
-            </p>
+            <p className="Student__message--none">Waiting for student questions...</p>
           )}
         </div>
       </div>

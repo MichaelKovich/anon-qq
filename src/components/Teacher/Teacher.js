@@ -9,7 +9,7 @@ class Teacher extends Component {
     this.state = {
       key: null,
       messages: [],
-      numberOfStudents: 0
+      numberOfStudents: 0,
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
     this.socket.emit('generate key');
@@ -52,11 +52,11 @@ class Teacher extends Component {
         <div className="Teacher__header">
           <div className="Teacher__code-text">
             <p>Your classroom code is: </p>
-            <pre className="Teacher__code">{key.classroomKey}</pre>
+            <pre className="Teacher__code">{key && key.classroomKey}</pre>
           </div>
           <div className="Teacher__code-text">
             <p>Your mentor code is: </p>
-            <pre className="Teacher__code">{key.mentorKey}</pre>
+            <pre className="Teacher__code">{key && key.mentorKey}</pre>
           </div>
           <div className="Teacher__number-text">
             <p>Number of students in room:</p>
@@ -78,9 +78,7 @@ class Teacher extends Component {
               </div>
             ))
           ) : (
-            <p className="Teacher__message--none">
-              Waiting for student questions...
-            </p>
+            <p className="Teacher__message--none">Waiting for student questions...</p>
           )}
         </div>
       </div>
