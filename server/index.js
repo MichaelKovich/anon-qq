@@ -16,13 +16,12 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 const messages = [];
-const keyHistory = new Set();
+const keyHistory = [];
 
 io.on('connection', (socket) => {
   console.log('A user has connected to the system.');
   socket.on('send message', (message) => {
-    const keyHistoryArray = [...keyHistory];
-    if (keyHistoryArray.findIndex(keyRing => keyRing.classroomKey === message.key) !== -1) {
+    if (keyHistory.findIndex(keyRing => keyRing.classroomKey === message.key) !== -1) {
       messages.unshift({
         message: message.message,
         key: message.key,
@@ -44,19 +43,23 @@ io.on('connection', (socket) => {
       messages.splice(index, 1);
       const messagesForRoom = messages.filter(message => message.key === key);
       io.sockets.in(key).emit('delete message', messagesForRoom);
-      console.log(messagesForRoom);
     }
   });
 
-  socket.on('generate key', (input) => {
+  socket.on('generate key', () => {
     console.log('Generating key...');
     let classroomKey = rand.generate(6);
     const mentorKey = rand.generate(3);
-    while (keyHistory.has(classroomKey)) {
+
+    let index = keyHistory.findIndex(keyRing => keyRing.classroomKey === key);
+
+    while (index !== -1) {
       classroomKey = rand.generate(6);
+      index = keyHistory.findIndex(keyRing => keyRing.classroomKey === key);
     }
+
     const keyRing = {classroomKey, mentorKey};
-    keyHistory.add(keyRing);
+    keyHistory.push(keyRing);
 
     console.log('Key History: ', keyHistory);
     io.sockets.emit('generation response', keyRing);
@@ -71,10 +74,8 @@ io.on('connection', (socket) => {
     mentorKey && console.log('Mentor Key: ', mentorKey);
     console.log('Key History: ', keyHistory);
 
-    const keyHistoryArray = [...keyHistory];
-
-    if (keyHistoryArray.findIndex(keyRing => keyRing.classroomKey === classroomKey) !== -1) {
-      if (keyHistoryArray.findIndex(keyRing => keyRing.mentorKey === mentorKey) !== -1) {
+    if (keyHistory.findIndex(keyRing => keyRing.classroomKey === classroomKey) !== -1) {
+      if (keyHistory.findIndex(keyRing => keyRing.mentorKey === mentorKey) !== -1) {
         socket.join(classroomKey);
         io.sockets.emit('validation response', {classroomKey: true, mentorKey: true});
         io.sockets
@@ -94,20 +95,26 @@ io.on('connection', (socket) => {
 
   socket.on('close room', (key) => {
     console.log('Closing room with Key: ', key);
-    keyHistory.delete(key);
-    console.log('Key History: ', keyHistory);
-    _remove(messages, message => message.key === key);
+
+    const index = keyHistory.findIndex(keyRing => keyRing.classroomKey === key);
+
+    if (index !== -1) {
+      keyHistory.splice(index, 1);
+      console.log('Key History: ', keyHistory);
+      _remove(messages, message => message.key === key);
+    }
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
-    if (keyHistory.size) {
-      keyHistory.forEach((key) => {
+    if (keyHistory.length) {
+      keyHistory.forEach((keyRing) => {
         io.sockets
-          .in(key)
+          .in(keyRing.classroomKey)
           .emit(
             'number of students',
-            io.sockets.adapter.rooms[key] && io.sockets.adapter.rooms[key].length - 1,
+            io.sockets.adapter.rooms[keyRing.classroomKey] &&
+              io.sockets.adapter.rooms[keyRing.classroomKey].length - 1,
           );
       });
     }
