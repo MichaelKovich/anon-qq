@@ -1,6 +1,5 @@
 .Student__input {
   width: 100%;
-  margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
   transition: box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -10,6 +9,19 @@
   font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
     sans-serif;
   font-size: 0.8rem;
+}
+
+@media (min-width: 768px) {
+  .Student__inputs {
+    display: flex;
+    justify-content: space-between;
+  }
+  .Student__input.Student__input--classroom {
+    width: 49%;
+  }
+  .Student__input.Student__input--mentor {
+    width: 49%;
+  }
 }
 
 .Student__input:focus {

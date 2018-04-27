@@ -15,7 +15,7 @@ class Student extends Component {
       messages: [],
       submitted: false,
       validClassroomKey: false,
-      validMentorKey: false,
+      validMentorKey: false
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
   }
@@ -40,7 +40,7 @@ class Student extends Component {
       this.socket.on('validation response', keyRing => {
         this.setState({
           validClassroomKey: keyRing.classroomKey,
-          validMentorKey: keyRing.mentorKey,
+          validMentorKey: keyRing.mentorKey
         });
       });
     }
@@ -53,7 +53,7 @@ class Student extends Component {
       this.socket.emit('send message', {
         user: `${firstName} ${lastName}`,
         message,
-        key: classroomKey,
+        key: classroomKey
       });
       this.setState({message: ''});
     }
@@ -69,7 +69,7 @@ class Student extends Component {
       lastName,
       submitted,
       validClassroomKey,
-      validMentorKey,
+      validMentorKey
     } = this.state;
 
     const bucketOfMonkeys = !(
@@ -82,42 +82,44 @@ class Student extends Component {
       <div className="Student">
         {bucketOfMonkeys && (
           <form onSubmit={this.onCodeSubmitHandler}>
-            <input
-              autoFocus
-              className="Student__input"
-              onChange={e => this.setState({classroomKey: e.target.value})}
-              value={classroomKey}
-              type="text"
-              required
-              placeholder="Classroom Code"
-              style={{
-                fontFamily: "'Courier New', Courier, monospace",
-                border: classroomKey
-                  ? submitted && validClassroomKey
-                    ? '1px solid #ccc'
-                    : submitted && !validClassroomKey
-                      ? '1px solid #ff7675'
-                      : '1px solid #ccc'
-                  : '1px solid #ccc',
-              }}
-            />
-            <input
-              className="Student__input"
-              onChange={e => this.setState({mentorKey: e.target.value})}
-              value={mentorKey}
-              type="text"
-              placeholder="Mentor Code"
-              style={{
-                fontFamily: "'Courier New', Courier, monospace",
-                border: mentorKey
-                  ? submitted && validMentorKey
-                    ? '1px solid #ccc'
-                    : submitted && !validMentorKey
-                      ? '1px solid #ff7675'
-                      : '1px solid #ccc'
-                  : '1px solid #ccc',
-              }}
-            />
+            <div className="Student__inputs">
+              <input
+                autoFocus
+                className="Student__input Student__input--classroom"
+                onChange={e => this.setState({classroomKey: e.target.value})}
+                value={classroomKey}
+                type="text"
+                required
+                placeholder="Classroom Code"
+                style={{
+                  fontFamily: "'Courier New', Courier, monospace",
+                  border: classroomKey
+                    ? submitted && validClassroomKey
+                      ? '1px solid #ccc'
+                      : submitted && !validClassroomKey
+                        ? '1px solid #ff7675'
+                        : '1px solid #ccc'
+                    : '1px solid #ccc'
+                }}
+              />
+              <input
+                className="Student__input Student__input--mentor"
+                onChange={e => this.setState({mentorKey: e.target.value})}
+                value={mentorKey}
+                type="text"
+                placeholder="Mentor Code"
+                style={{
+                  fontFamily: "'Courier New', Courier, monospace",
+                  border: mentorKey
+                    ? submitted && validMentorKey
+                      ? '1px solid #ccc'
+                      : submitted && !validMentorKey
+                        ? '1px solid #ff7675'
+                        : '1px solid #ccc'
+                    : '1px solid #ccc'
+                }}
+              />
+            </div>
             <input
               className="Student__input Student__input--firstname"
               onChange={e => this.setState({firstName: e.target.value})}
@@ -134,20 +136,22 @@ class Student extends Component {
               required
               placeholder="Last Name"
             />
-
             <button
               style={{
-                display: 'none',
+                display: 'none'
               }}
             />
           </form>
         )}
-        {validClassroomKey ? (
+        {!bucketOfMonkeys ? (
           <div>
-            You're currently logged in as a {mentorKey && validMentorKey ? 'mentor' : 'student'}.
+            You're currently logged in as a{' '}
+            {mentorKey && validMentorKey ? 'mentor' : 'student'}.
             <br />
             <br />
             Enter your questions here:
+            <br />
+            <br />
             <form onSubmit={this.onSubmitHandler}>
               <input
                 disabled={bucketOfMonkeys}
@@ -168,7 +172,9 @@ class Student extends Component {
                   </div>
                 ))
               ) : (
-                <p className="Student__message--none">Waiting for student questions...</p>
+                <p className="Student__message--none">
+                  Waiting for student questions...
+                </p>
               )}
             </div>
           </div>
