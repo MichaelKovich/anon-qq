@@ -136,11 +136,7 @@ class Student extends Component {
               required
               placeholder="Last Name"
             />
-            <button
-              style={{
-                display: 'none'
-              }}
-            />
+            <button className="Student__submit">Enter Room</button>
           </form>
         )}
         {!bucketOfMonkeys ? (
@@ -167,7 +163,10 @@ class Student extends Component {
               {messages && messages[0] ? (
                 messages.map(message => (
                   <div className="Student__message" key={message.id}>
-                    {validMentorKey && `${message.user}: `}
+                    {validMentorKey &&
+                      message &&
+                      message.user &&
+                      `${message.user}: `}
                     {message.message}
                   </div>
                 ))

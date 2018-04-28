@@ -6,9 +6,17 @@
   outline: none;
   margin-bottom: 10px;
   padding: 20px;
-  font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-    sans-serif;
   font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.Student__input.Student__input--classroom:hover,
+.Student__input.Student__input--classroom:focus {
+  border: 1px solid white;
+}
+.Student__input.Student__input--mentor:hover,
+.Student__input.Student__input--mentor:focus {
+  border: 1px solid white;
 }
 
 @media (min-width: 768px) {
@@ -27,6 +35,28 @@
 .Student__input:focus {
   border: 1px solid white;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1), 0 8px 5px rgba(0, 0, 0, 0.05);
+}
+
+.Student__submit {
+  width: 100%;
+  border: 1px solid rgba(0, 27, 67, 0.84);
+  border-radius: 3px;
+  transition: box-shadow 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  margin-bottom: 10px;
+  padding: 20px;
+  background-color: rgba(0, 27, 67, 0.84);
+  color: #fff;
+  transition: all 100ms linear;
+  font-family: inherit;
+  letter-spacing: 1px;
+}
+
+.Student__submit:hover,
+.Student__submit:focus {
+  border: 1px solid rgba(0, 27, 67, 0.84);
+  background-color: #fff;
+  color: rgba(0, 27, 67, 0.84);
 }
 
 .Student__room {
