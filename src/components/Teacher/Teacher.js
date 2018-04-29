@@ -9,7 +9,7 @@ class Teacher extends Component {
     this.state = {
       key: null,
       messages: [],
-      numberOfStudents: 0,
+      numberOfStudents: 0
     };
     this.socket = socketIOClient(process.env.REACT_APP_HOST);
     this.socket.emit('generate key');
@@ -45,6 +45,11 @@ class Teacher extends Component {
     this.props.history.push('/');
   };
 
+  componentWillUnmount() {
+    const {key} = this.state;
+    this.socket.emit('close room', key.classroomKey);
+  }
+
   render() {
     const {key, messages, numberOfStudents} = this.state;
     return (
@@ -78,7 +83,9 @@ class Teacher extends Component {
               </div>
             ))
           ) : (
-            <p className="Teacher__message--none">Waiting for student questions...</p>
+            <p className="Teacher__message--none">
+              Waiting for student questions...
+            </p>
           )}
         </div>
       </div>
