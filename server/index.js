@@ -7,7 +7,7 @@ const socketIo = require('socket.io');
 const rand = require('random-key');
 const _remove = require('lodash/remove');
 
-const port = 3001;
+const port = process.env.PORT || 3001;
 const app = express();
 
 app.use(json());
