@@ -11,7 +11,7 @@ class Teacher extends Component {
       messages: [],
       numberOfStudents: 0
     };
-    this.socket = socketIOClient(process.env.REACT_APP_HOST);
+    this.socket = socketIOClient(process.env.PORT + '/');
     this.socket.emit('generate key');
   }
 

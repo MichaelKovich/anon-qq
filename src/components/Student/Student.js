@@ -17,7 +17,7 @@ class Student extends Component {
       validClassroomKey: false,
       validMentorKey: false
     };
-    this.socket = socketIOClient(process.env.REACT_APP_HOST);
+    this.socket = socketIOClient(process.env.PORT + '/');
   }
 
   componentDidMount() {
