@@ -46,6 +46,13 @@ class Student extends Component {
     }
   };
 
+  componentWillUnmount() {
+    let {classroomKey, validClassroomKey} = this.state;
+    classroomKey &&
+      validClassroomKey &&
+      this.socket.emit('leave room', classroomKey);
+  }
+
   onSubmitHandler = e => {
     e.preventDefault();
     let {message, firstName, lastName, classroomKey} = this.state;

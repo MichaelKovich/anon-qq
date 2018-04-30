@@ -47,7 +47,10 @@ class Teacher extends Component {
 
   componentWillUnmount() {
     const {key} = this.state;
-    key && key.classroomKey && this.socket.emit('close room', key.classroomKey);
+    key &&
+      key.classroomKey &&
+      this.socket.emit('close room', key.classroomKey) &&
+      this.socket.emit('leave room', key.classroomKey);
   }
 
   render() {

@@ -127,6 +127,11 @@ io.on('connection', socket => {
     }
   });
 
+  socket.on('leave room', classroomKey => {
+    socket.leave(classroomKey);
+    console.log(`Student ${socket.id} has left the room ${classroomKey}`);
+  });
+
   socket.on('close room', key => {
     console.log('Closing room with Key: ', key);
 
